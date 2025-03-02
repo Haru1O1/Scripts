@@ -1,0 +1,80 @@
+---
+# Jason Yeung
+# jy3693@rit.edu
+
+- hosts: all
+  vars_prompt:
+      # Prompt for a database name
+      - name: database_name
+        prompt: What do you want the database to be called
+        private: no
+      # Prompt for a username for mysql
+      - name: mysql_username
+        prompt: Enter a username for mysql
+        private: no
+      # Prompt for a password for mysql
+      - name: mysql_password
+        prompt: Enter a password
+        private: yes
+
+  tasks:
+
+    - name: Install MYSQL if not already
+      apt:
+        pkg:
+        - default-mysql-server # pkg for mysql server
+        - python3-mysqldb # pkg for python database api
+        update_cache: yes
+        state: latest
+      become: yes
+
+    - name: Start MYSQL if not already
+      service:
+        name: mysql
+        enabled: yes
+        state: started
+      become: yes # run as root
+
+    - name: Set MYSQL root password
+      command:
+        # Command to change/set root password
+        cmd: mysqladmin -u root password 'R00/My5ql01'
+      become: yes # run as root
+
+    - name: Create a database
+      mysql_db:
+        name: '{{ database_name }}'
+        state: present
+        login_user: root
+        login_password: 'R00/My5ql01'
+      become: yes # run as root
+
+    - name: Check if the given credentials exist
+      mysql_user:
+        name: '{{ mysql_username }}'
+        check_implicit_admin: yes # check for perms
+        state: present
+      register: user_check # store output in variable
+      ignore_errors: yes
+      become: yes # run as roor
+
+    - name: Attempt to login to check credentials are correct
+      shell:
+           # command to login to mysql and immediately exit if successful
+           "mysql -u '{{ mysql_username }}' -p'{{ mysql_password }}' -e exit"
+      register: login_success # store output in variable
+      when: user_check is succeeded
+      become: yes
+    - debug: # print the output to stdout
+        msg: "{{login_success.stdout_lines}}"
+      when: user_check is succeeded
+
+    - name: Create a MySQL user if it does not exist
+      mysql_user:
+        name: '{{ mysql_username }}'
+        password: '{{ mysql_password }}'
+        state: present
+        login_user: root
+        login_password: 'R00/My5ql01'
+      become: yes # run as root
+      when: user_check is failed

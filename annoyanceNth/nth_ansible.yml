@@ -1,0 +1,24 @@
+---
+- hosts: all
+  tasks:
+    - name: Install Pip
+      win_shell: |
+        python -m ensurepip
+      
+    - name: Copy requirements.txt to Windows
+      win_copy:
+        src: ./requirements.txt
+        dest: C:\requirements.txt
+
+    - name: Install Python packages
+      win_shell: |
+        python -m pip install -r C:\requirements.txt
+
+    - name: Copy the exe to Windows
+      win_copy:
+        src: annoyanceNth.py
+        dest: C:\Logs
+
+    - name: Run the exe
+      win_shell: |
+        python C:\Logs\annoyanceNth.py

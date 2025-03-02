@@ -1,0 +1,28 @@
+---
+# Jason Yeung
+# jy3693@rit.edu
+
+- name: Network script
+  hosts: all
+  tasks:
+  - name: Install netstat if not already
+    apt:
+       pkg:
+       - net-tools
+       update_cache: yes
+       state: latest
+    become: yes
+
+  - name: Check active TCP and UDP connections
+    shell:
+        "netstat -tulpn"
+    register: port_list
+  - debug:
+        msg: "{{port_list.stdout_lines}}"
+
+  - name: List ports currently in used and by what process
+    shell:
+        "sudo ss -tulpn"
+    register: ports_used
+  - debug:
+        msg: "{{ports_used.stdout_lines}}"

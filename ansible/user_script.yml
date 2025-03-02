@@ -1,0 +1,31 @@
+---
+# Jason Yeung
+# jy3693@rit.edu
+
+- name: User Script
+  hosts: all
+  tasks:
+
+  - name: Check current logged on users
+    shell:
+        "w"
+    register: logged_users # store output in a varaible
+  - debug: # print to stdout
+        msg: "{{logged_users.stdout_lines}}"
+
+  - name: All users created
+    shell:
+        |
+        find /home -print0 | xargs -0 -I {} stat -c '%Y %U' "{}" | \
+        awk '$1 < d[$2] || !d[$2] { d[$2]=$1 } END { for (u in d) { print d[u], u } }' | \
+        sort -n -k1
+    register: all_users # store output in a varaible
+  - debug: # print to stdout
+        msg: "{{all_users.stdout_lines}}"
+
+  - name: Creation date of users(with a home directory) created
+    shell:
+        "ls -ld /home/* | sort -k6,7 | awk '{print $3, $6, $7}'"
+    register: date_users # store output in a variable
+  - debug: # print to stdout
+        msg: "{{date_users.stdout_lines}}"
