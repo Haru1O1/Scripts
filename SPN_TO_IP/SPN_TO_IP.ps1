@@ -3,7 +3,7 @@ $spnFilePath = Read-Host "Enter path to SPNs file (comma separated hostnames)"
 
 # Define subnets
 $subnets = @(
-    "10.1.1.0/24" # add subnets
+    "10.10.1.0/24" # add subnets
 )
 
 function Test-IpInSubnet {
