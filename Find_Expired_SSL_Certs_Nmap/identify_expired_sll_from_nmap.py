@@ -2,16 +2,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-def classify_severity(days_expired):
-    if days_expired < 30:
-        return "Low"
-    elif days_expired < 180:
-        return "Medium"
-    elif days_expired < 365 * 2:
-        return "High"
-    else:
-        return "Critical"
-
 def parse_nmap_ssl_certs(nmap_output):
     expired_hosts = []
     current_ip = None
@@ -53,7 +43,6 @@ def parse_nmap_ssl_certs(nmap_output):
                             'port': current_port,
                             'expired_on': expiry_date.strftime('%Y-%m-%d'),
                             'days_expired': days_expired,
-                            'severity': classify_severity(days_expired)
                         })
                 except ValueError:
                     pass
@@ -70,8 +59,7 @@ def print_expired_hosts(expired_hosts):
         print(f"IP: {host['ip']}")
         print(f"Port: {host['port']}")
         print(f"Expired On: {host['expired_on']}")
-        print(f"Expired For: {host['days_expired']} days")
-        print(f"Severity: {host['severity']}\n")
+        print(f"Expired For: {host['days_expired']} days\n")
 
 def output_csv_format(all_results):
     if not all_results:
@@ -79,9 +67,9 @@ def output_csv_format(all_results):
         return
 
     print("\n Full Results seperated by commas:\n")
-    print("IP,Port,Expired On,Days Expired,Severity")
+    print("IP,Port,Expired On,Days Expired")
     for r in all_results:
-        print(f"{r['ip']},{r['port']},{r['expired_on']},{r['days_expired']},{r['severity']}")
+        print(f"{r['ip']},{r['port']},{r['expired_on']},{r['days_expired']}")
     print("\n")
 
 def main():
