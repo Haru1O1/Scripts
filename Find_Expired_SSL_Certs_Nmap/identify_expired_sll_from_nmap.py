@@ -62,10 +62,10 @@ def parse_nmap_ssl_certs(nmap_output):
 
 def print_expired_hosts(expired_hosts):
     if not expired_hosts:
-        print("\n✅ No expired SSL certificates found.\n")
+        print("\nNo expired SSL certificates found.\n")
         return
 
-    print("\n⚠️ Expired SSL Certificates:\n" + "-" * 50)
+    print("\nExpired SSL Certificates:\n" + "-" * 50)
     for host in expired_hosts:
         print(f"IP: {host['ip']}")
         print(f"Port: {host['port']}")
@@ -75,10 +75,10 @@ def print_expired_hosts(expired_hosts):
 
 def output_csv_format(all_results):
     if not all_results:
-        print("✅ No expired SSL certificates collected.")
+        print("No expired SSL certificates collected.")
         return
 
-    print("\n📋 Copy and paste into Excel or Google Sheets:\n")
+    print("\n Full Results seperated by commas:\n")
     print("IP,Port,Expired On,Days Expired,Severity")
     for r in all_results:
         print(f"{r['ip']},{r['port']},{r['expired_on']},{r['days_expired']},{r['severity']}")
@@ -97,7 +97,7 @@ def main():
 
         file_path = Path(file_input)
         if not file_path.exists():
-            print("❌ File not found. Please try again.")
+            print("File not found. Please try again.")
             continue
 
         try:
